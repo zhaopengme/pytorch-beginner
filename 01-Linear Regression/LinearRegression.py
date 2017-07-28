@@ -29,10 +29,12 @@ y_train = torch.from_numpy(y_train)
 
 
 
-
+# Linear Regression Model
+# 定义线性回归模型
 class LinearRegression(nn.Module):
     def __init__(self):
-        super(LinearRegression,self)
+        super(LinearRegression,self).__init__()
+
 
 
 
