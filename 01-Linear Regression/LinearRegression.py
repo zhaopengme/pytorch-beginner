@@ -1,8 +1,9 @@
 import torch
 import torch.autograd as autograd
 import torch.nn as nn
+import torch.optim as optim
 import torch.autograd.function as F
-import torch.autograd.variable as Fariable
+import torch.autograd.variable as Variable
 
 import matplotlib
 
@@ -43,11 +44,31 @@ class LinearRegression(nn.Module):
         out = self.linear(x)
         return out
 
+# 创建 model 对象
+model = LinearRegression()
+
+# 定义 loss/误差/损失函数/loss 函数 反正都一个意思
+criterion = nn.MSELoss() # 均方差/最小二次方
+
+# 定义优化函数/优化器
+# 注意需要将model的参数model.parameters()传进去让这个函数知道他要优化的参数是那些
+optimizer = optim.SGD( model.parameters(),lr=1e-4) # 随机梯度下降
 
 
+# 开始训练
+num_epochs =1000 #迭代次数
 
+for eopch in range(num_epochs):
+    #输入参数
+    inputs = Variable(x_train)
+    #目标参数
+    target = Variable(y_train)
 
+    # forward
+    out = model(inputs) # 前向传播
+    loss = criterion(out,target)# 计算损失函数/ loss/误差
 
+    # backward 后向传播
 
 
 plt.figure()
