@@ -31,12 +31,17 @@ y_train = torch.from_numpy(y_train)
 
 # Linear Regression Model
 # 定义线性回归模型
+# 所有的模型都要继承这个类 nn.Module
 class LinearRegression(nn.Module):
     def __init__(self):
         super(LinearRegression,self).__init__()
+        # 这里的nn.Linear表示的是 y=w*x+b，里面的两个参数都是1，表示的是x是1维，y也是1维
+        self.linear = nn.Linear(1,1)
 
-
-
+    # 定义前向传播
+    def forward(self,x):
+        out = self.linear(x)
+        return out
 
 
 
@@ -46,5 +51,5 @@ class LinearRegression(nn.Module):
 
 
 plt.figure()
-plt.plot(x_train.numpy(),y_train.numpy())
+plt.plot(x_train.numpy(),y_train.numpy(), 'ro')
 plt.show()
