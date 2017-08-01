@@ -2,16 +2,15 @@ import  torch
 from torch import nn,optim
 from torch.autograd import Variable
 import numpy as np
-import  time
-import matplotlib
 
+import matplotlib
+import  time
 # 设置为 TkAgg 否则在 mac 上面可能不能显示出来
 matplotlib.use('TkAgg')
 
 import matplotlib.pyplot as plt
 
 startTime = time.time()
-
 is_cuda = torch.cuda.is_available()
 
 print("is support cuda:{}".format(is_cuda))
@@ -45,7 +44,7 @@ class LinearRegression(nn.Module):
 
 
 # 创建 model 对象
-model = LinearRegression()
+model = LinearRegression().cuda()
 
 # 定义 loss/误差/损失函数/loss 函数 反正都一个意思
 criterion = nn.MSELoss()  # 均方差/最小二次方
@@ -59,9 +58,9 @@ num_epochs = 10000  # 迭代次数
 
 for eopch in range(num_epochs):
     # 输入参数
-    inputs = Variable(x_train)
+    inputs = Variable(x_train).cuda()
     # 目标参数
-    target = Variable(y_train)
+    target = Variable(y_train).cuda()
 
     # forward
     out = model(inputs)  # 前向传播
@@ -79,8 +78,8 @@ for eopch in range(num_epochs):
 
 # 开始验证
 model.eval()  # 让model变成测试模式，这主要是对dropout和batch normalization的操作在训练和测试的时候是不一样的
-predict = model(Variable(x_train))# 开始预测
-predict = predict.data.numpy() # 转化为 numpy 格式
+predict = model(Variable(x_train).cuda())# 开始预测
+predict = predict.data.cpu().numpy() # 转化为 numpy 格式
 
 endTime = time.time()
 
