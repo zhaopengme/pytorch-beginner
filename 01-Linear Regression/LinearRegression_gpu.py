@@ -51,7 +51,8 @@ criterion = nn.MSELoss()  # 均方差/最小二次方
 
 # 定义优化函数/优化器
 # 注意需要将model的参数model.parameters()传进去让这个函数知道他要优化的参数是那些
-optimizer = optim.SGD(model.parameters(), lr=1e-4)  # 随机梯度下降
+learning_rate = 1e-4 #学习率
+optimizer = optim.SGD(model.parameters(),learning_rate)  # 随机梯度下降
 
 # 开始训练
 num_epochs = 10000  # 迭代次数
