@@ -25,12 +25,13 @@ print(x == y)
 
 
 print('00000000000000000000000000000')
-print(x)
 
-a = torch.range(1, 16)
+a = torch.arange(1, 16)
 
 print(a)
 a = a.view(4, -1)
+print(a)
+
 a = a.view(4, 4)
 
-print(a)
+# print(a)
