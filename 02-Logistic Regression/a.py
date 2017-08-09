@@ -68,8 +68,9 @@ for epoch in range(num_epoches):
     running_loss = 0.0
     running_acc = 0.0
     for i, data in enumerate(train_loader, 1):
-        img, label = data
-        img = img.view(img.size(0), -1)  # 将图片展开成 28x28
+        img, label = data # train data 里面包含有两部分数据库,一部分是处理后的图片数据,一部分是表情 label 数据
+        imgSize = img.size(0) # 矩阵中第0维的大小,如果不带参数,就是矩阵的大小
+        img = img.view(imgSize, -1)  # 将图片展开成 28x28
         if use_gpu:
             img = Variable(img).cuda()
             label = Variable(label).cuda()

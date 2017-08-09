@@ -1,6 +1,6 @@
 import torch
-a = torch.randn(7,5)
+a = torch.randn(7,9)
 print(a)
-a = a.size(0)
+a = a.size(1)
 
 print(a)
