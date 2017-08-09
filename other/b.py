@@ -1,6 +1,6 @@
 import torch
-a = torch.randn(7,9)
+a = torch.randn(8,9)
 print(a)
-a = a.size(1)
+a = a.view(3,-1)
 
 print(a)
