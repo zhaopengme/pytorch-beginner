@@ -66,8 +66,10 @@ optimizer = optim.SGD(model.parameters(), lr=learning_rate)  # 随机梯度下�
 for epoch in range(num_epoches):
     print('epoch {}'.format(epoch + 1))
     print('*' * 10)
-    running_loss = 0.0 # 本次训练累加损失函数的值
-    running_acc = 0.0 # 本次训练累加正确率的值
+    running_loss = 0.0  # 本次训练累加损失函数的值
+    running_acc = 0.0  # 本次训练累加正确率的值
+
+    # 每次都是根据 batch_size 来小批量处理的,要注意累加和乘以总数
     for i, data in enumerate(train_loader, 1):
         img, label = data  # train data 里面包含有两部分数据库,一部分是处理后的图片数据,一部分是表情 label 数据
         imgSize = img.size(0)  # 矩阵中第0维的大小,如果不带参数,就是矩阵的大小
@@ -81,23 +83,34 @@ for epoch in range(num_epoches):
         # 向前传播
         out = model(img)  # out 计算我们预测值 ?? 这里描述的不准确,可以认为就是预测出来了一组数据
         loss = criterion(out, label)  # 计算损失函数/ loss/误差 比较预测的值和实际值的误差
-        temp_loss = loss.data[0] * label.size(0) # loss 是个 variable，所以取 data，因为 loss 是算出来的平均值，所以乘上数量得到总的
-        running_loss = running_loss + temp_loss
+        temp_loss = loss.data[0] * label.size(0)  # loss 是个 variable，所以取 data，因为 loss 是算出来的平均值，所以乘上数量得到总的
+        running_loss = running_loss + temp_loss  # temp_loss 是计算的本次小批量的值,要累加才是合计的
+
+        # torch.max  返回输入张量给定维度上每行的最大值，并同时返回每个最大值的位置索引。
+        # 这里 1 表示取列上面的最大值,如果是0 就会按照行来取值
+        # pred 是索引的位置,一共有10个索引位置,算出来哪个位置的概率最大,这个值就是这个索引位置
         _, pred = torch.max(out, 1)
-        num_correct = (pred == label).sum()
-        running_acc = running_acc + num_correct.data[0]
+
+        num_correct = (pred == label).sum()  # (pred == label) 比较相同位置上面值,如果相等就是1,否则就是0. sum 之后,就算出来了有多少个正确的了
+        running_acc = running_acc + num_correct.data[0]  # 累计正确的数量
+
         # 向后传播
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-        if i % 300 == 0:
-            print('[{}/{}] Loss: {:.6f}, Acc: {:.6f}'.format(
-                epoch + 1, num_epoches, running_loss / (batch_size * i),
-                running_acc / (batch_size * i)))
-    print('Finish {} epoch, Loss: {:.6f}, Acc: {:.6f}'.format(
-        epoch + 1, running_loss / (len(train_dataset)), running_acc / (len(
-            train_dataset))))
+        if i % 300 == 0:  # 每300次打印一下
+            l = batch_size * i  # 样本数量
+            tempRunningLoss = running_loss / l  # 当前损失函数的值 合计/样本数量
+            tempRunningAcc = running_acc / l  # 当前的正确率 正确的数量/样本数量
+
+            print('[{}/{}] Loss: {:.6f}, Acc: {:.6f}'.format(epoch + 1, num_epoches, tempRunningLoss, tempRunningAcc))
+
+    length = len(train_dataset)  # 所有的样本数量
+    finishRunningLoss = running_loss / length  # 最终损失函数的值 合计/样本数量
+    finishRunningAcc = running_acc / length  # 最终的正确率 正确的数量/样本数量
+
+    print('Finish {} epoch, Loss: {:.6f}, Acc: {:.6f}'.format(epoch + 1, finishRunningLoss, finishRunningAcc))
 
     model.eval()
 
