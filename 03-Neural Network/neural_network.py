@@ -43,24 +43,24 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 # 定义神经网络模型
 # 定义为简单三层结构
 class NeuralNetwork(nn.Module):
-    def __init__(self, in_dim, n_hidden_1, n_hidden_2, n_class):
+    def __init__(self, in_dim, n_hidden_1, n_hidden_2, out_dim):
         super(NeuralNetwork, self).__init__()
         self.layer1 = nn.Linear(in_dim, n_hidden_1)
         self.layer2 = nn.Linear(n_hidden_1, n_hidden_2)
-        self.layer3 = nn.Linear(n_hidden_2, n_class)
+        self.layer3 = nn.Linear(n_hidden_2, out_dim)
 
     def forward(self, x):
         x = self.layer1(x)
         x = self.layer2(x)
-        out = self.layer3(x)
-        return out
+        x = self.layer3(x)
+        return x
 
 
 # in_dim 数据的维度
 # n_class 分类数量
 
 
-model = NeuralNetwork(28 * 28, 300, 100, 10)  # 图片大小是28x28
+model = NeuralNetwork(28 * 28, 500, 200, 10)  # 图片大小是28x28
 use_gpu = torch.cuda.is_available()  # 判断是否有GPU加速
 if use_gpu:
     model = model.cuda()
