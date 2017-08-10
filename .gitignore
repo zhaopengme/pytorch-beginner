@@ -104,3 +104,4 @@ ENV/
 02-Logistic Regression/data/
 03-Neural Network/data
 .DS_Store
+*.pth
