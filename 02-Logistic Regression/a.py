@@ -112,6 +112,7 @@ for epoch in range(num_epoches):
 
     print('Finish {} epoch, Loss: {:.6f}, Acc: {:.6f}'.format(epoch + 1, finishRunningLoss, finishRunningAcc))
 
+    # 修改为测试验证模式
     model.eval()
 
     eval_loss = 0.
@@ -127,12 +128,16 @@ for epoch in range(num_epoches):
             label = Variable(label, volatile=True)
         out = model(img)
         loss = criterion(out, label)
-        eval_loss += loss.data[0] * label.size(0)
+        eval_loss = eval_loss + loss.data[0] * label.size(0)
         _, pred = torch.max(out, 1)
         num_correct = (pred == label).sum()
-        eval_acc += num_correct.data[0]
-    print('Test Loss: {:.6f}, Acc: {:.6f}'.format(eval_loss / (len(
-        test_dataset)), eval_acc / (len(test_dataset))))
+        eval_acc = eval_acc + num_correct.data[0]
+
+    testLength = len(test_dataset)  # 测试样本的数量
+    testLoss = eval_loss / testLength
+    testAcc = eval_acc / testLength
+
+    print('Test Loss: {:.6f}, Acc: {:.6f}'.format(testLoss, testAcc))
     print()
 
 # 保存模型
