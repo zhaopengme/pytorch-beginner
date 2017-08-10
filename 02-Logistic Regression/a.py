@@ -33,7 +33,7 @@ train_loader = DataLoader(
     train_dataset,  # 处理使用的数据集
     batch_size=batch_size,  # 每次batch 加载的样本数量
     num_workers=2,  # 加载数据的使用几个线程
-    shuffle=True # 每次训练取数据的时候,是否随机打乱顺序
+    shuffle=True  # 每次训练取数据的时候,是否随机打乱顺序
 )
 
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
@@ -50,6 +50,7 @@ class Logstic_Regression(nn.Module):
         out = self.logstic(x)
         return out
 
+
 # in_dim 数据的维度
 # n_class 分类数量
 
@@ -58,18 +59,18 @@ use_gpu = torch.cuda.is_available()  # 判断是否有GPU加速
 if use_gpu:
     model = model.cuda()
 # 定义loss和optimizer
-criterion = nn.CrossEntropyLoss() # 交叉熵
-optimizer = optim.SGD(model.parameters(), lr=learning_rate) # 随机梯度下降
+criterion = nn.CrossEntropyLoss()  # 交叉熵
+optimizer = optim.SGD(model.parameters(), lr=learning_rate)  # 随机梯度下降
 
 # 开始训练
 for epoch in range(num_epoches):
     print('epoch {}'.format(epoch + 1))
     print('*' * 10)
-    running_loss = 0.0
-    running_acc = 0.0
+    running_loss = 0.0 # 本次训练累加损失函数的值
+    running_acc = 0.0 # 本次训练累加正确率的值
     for i, data in enumerate(train_loader, 1):
-        img, label = data # train data 里面包含有两部分数据库,一部分是处理后的图片数据,一部分是表情 label 数据
-        imgSize = img.size(0) # 矩阵中第0维的大小,如果不带参数,就是矩阵的大小
+        img, label = data  # train data 里面包含有两部分数据库,一部分是处理后的图片数据,一部分是表情 label 数据
+        imgSize = img.size(0)  # 矩阵中第0维的大小,如果不带参数,就是矩阵的大小
         img = img.view(imgSize, -1)  # 将图片展开成 28x28  ,view 类似于 reshape的用法,改变数组/矩阵的形状 -1表示自动分配计算
         if use_gpu:
             img = Variable(img).cuda()
@@ -78,12 +79,13 @@ for epoch in range(num_epoches):
             img = Variable(img)
             label = Variable(label)
         # 向前传播
-        out = model(img)
-        loss = criterion(out, label)
-        running_loss += loss.data[0] * label.size(0)
+        out = model(img)  # out 计算我们预测值 ?? 这里描述的不准确,可以认为就是预测出来了一组数据
+        loss = criterion(out, label)  # 计算损失函数/ loss/误差 比较预测的值和实际值的误差
+        temp_loss = loss.data[0] * label.size(0) # loss 是个 variable，所以取 data，因为 loss 是算出来的平均值，所以乘上数量得到总的
+        running_loss = running_loss + temp_loss
         _, pred = torch.max(out, 1)
         num_correct = (pred == label).sum()
-        running_acc += num_correct.data[0]
+        running_acc = running_acc + num_correct.data[0]
         # 向后传播
         optimizer.zero_grad()
         loss.backward()
