@@ -102,3 +102,4 @@ ENV/
 .mypy_cache/
 .vscode/
 02-Logistic Regression/data/
+.DS_Store
