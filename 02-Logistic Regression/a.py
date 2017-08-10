@@ -7,6 +7,8 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision import datasets
+import  time
+
 
 # 定义超参数
 batch_size = 32  # 每次拿出来多少个样本进行训练
@@ -54,16 +56,21 @@ class Logstic_Regression(nn.Module):
 # in_dim 数据的维度
 # n_class 分类数量
 
+
 model = Logstic_Regression(28 * 28, 10)  # 图片大小是28x28
 use_gpu = torch.cuda.is_available()  # 判断是否有GPU加速
 if use_gpu:
     model = model.cuda()
 # 定义loss和optimizer
-criterion = nn.CrossEntropyLoss()  # 交叉熵
+criterion = nn.CrossEntropyLoss() # 交叉熵
 optimizer = optim.SGD(model.parameters(), lr=learning_rate)  # 随机梯度下降
+
+
 
 # 开始训练
 for epoch in range(num_epoches):
+    startTime = time.time()
+
     print('epoch {}'.format(epoch + 1))
     print('*' * 10)
     running_loss = 0.0  # 本次训练累加损失函数的值
@@ -81,7 +88,7 @@ for epoch in range(num_epoches):
             img = Variable(img)
             label = Variable(label)
         # 向前传播
-        out = model(img)  # out 计算我们预测值 ?? 这里描述的不准确,可以认为就是预测出来了一组数据
+        out = model(img) # out 计算我们预测值 ?? 这里描述的不准确,可以认为就是预测出来了一组数据
         loss = criterion(out, label)  # 计算损失函数/ loss/误差 比较预测的值和实际值的误差
         temp_loss = loss.data[0] * label.size(0)  # loss 是个 variable，所以取 data，因为 loss 是算出来的平均值，所以乘上数量得到总的
         running_loss = running_loss + temp_loss  # temp_loss 是计算的本次小批量的值,要累加才是合计的
@@ -112,33 +119,37 @@ for epoch in range(num_epoches):
 
     print('Finish {} epoch, Loss: {:.6f}, Acc: {:.6f}'.format(epoch + 1, finishRunningLoss, finishRunningAcc))
 
-    # 修改为测试验证模式
-    model.eval()
+    endTime = time.time()
 
-    eval_loss = 0.
-    eval_acc = 0.
-    for data in test_loader:
-        img, label = data
-        img = img.view(img.size(0), -1)
-        if use_gpu:
-            img = Variable(img, volatile=True).cuda()
-            label = Variable(label, volatile=True).cuda()
-        else:
-            img = Variable(img, volatile=True)
-            label = Variable(label, volatile=True)
-        out = model(img)
-        loss = criterion(out, label)
-        eval_loss = eval_loss + loss.data[0] * label.size(0)
-        _, pred = torch.max(out, 1)
-        num_correct = (pred == label).sum()
-        eval_acc = eval_acc + num_correct.data[0]
+    print('consuming time:{}'.format(endTime - startTime))
 
-    testLength = len(test_dataset)  # 测试样本的数量
-    testLoss = eval_loss / testLength
-    testAcc = eval_acc / testLength
+# 修改为测试验证模式
+model.eval()
 
-    print('Test Loss: {:.6f}, Acc: {:.6f}'.format(testLoss, testAcc))
-    print()
+eval_loss = 0.
+eval_acc = 0.
+for data in test_loader:
+    img, label = data
+    img = img.view(img.size(0), -1)
+    if use_gpu:
+        img = Variable(img, volatile=True).cuda()
+        label = Variable(label, volatile=True).cuda()
+    else:
+        img = Variable(img, volatile=True)
+        label = Variable(label, volatile=True)
+    out = model(img)
+    loss = criterion(out, label)
+    eval_loss = eval_loss + loss.data[0] * label.size(0)
+    _, pred = torch.max(out, 1)
+    num_correct = (pred == label).sum()
+    eval_acc = eval_acc + num_correct.data[0]
+
+testLength = len(test_dataset)  # 测试样本的数量
+testLoss = eval_loss / testLength
+testAcc = eval_acc / testLength
+
+print('Test Loss: {:.6f}, Acc: {:.6f}'.format(testLoss, testAcc))
+print()
 
 # 保存模型
 torch.save(model.state_dict(), './logstic.pth')
