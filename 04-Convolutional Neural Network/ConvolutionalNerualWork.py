@@ -79,6 +79,9 @@ class Convolutional(nn.Module):
 
 model = Convolutional(10)  # 10 个分类
 
+if use_gpu:
+    model  = model.cuda()
+
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(model.parameters(), lr=learning_rate)
 
