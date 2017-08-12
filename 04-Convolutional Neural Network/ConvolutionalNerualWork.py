@@ -148,7 +148,7 @@ eval_loss = 0.
 eval_acc = 0.
 for data in test_loader:
     img, label = data
-    img = img.view(img.size(0), -1)
+    # img = img.view(img.size(0), -1)
     if use_gpu:
         img = Variable(img, volatile=True).cuda()
         label = Variable(label, volatile=True).cuda()
