@@ -27,3 +27,12 @@ train_DataLoader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True
 test_DataLoader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 
+class Rnn(nn.Module):
+    def __init__(self):
+        super(Rnn, self).__init__()
+        self.rnn = nn.LSTM(
+            input_size=28,  # 图片每行的数据像素点,输入序列的数据数量
+            hidden_size=64,  # rnn hidden unit ,输出维度
+            num_layers=1,  # 有几层 rnn
+            batch_first=True  # input & out 会以 batch size 为第一维度的特征集, e.g. (batch,time_step,input_size)
+        )
