@@ -41,5 +41,8 @@ class Rnn(nn.Module):
             1  # 返回一个点的值
         )
 
-    def forward(self, x, h_state):# 因为 h_state 是一直连续的, 所以也要
-        r_out, h_state = self.rnn(x, h_state)
+    def forward(self, x, h_state):  # 因为 h_state 是一直连续的, 所以也要一直传递
+        #  x (batch,time_step,input_size)
+        # h_state(n_layers,batch,hidden_size)
+        # r_out(batch,time_step,output_size)
+        r_out, h_state = self.rnn(x, h_state) # h_state 也要作为 rnn 的输入
