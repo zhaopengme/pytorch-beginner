@@ -3,7 +3,7 @@ from  torch.autograd import Variable
 from  torch.utils.data import DataLoader
 from torch import nn, optim
 from torchvision import transforms, datasets
-
+# mnist 分类
 # 定义超参数
 batch_size = 64  # 每次训练样本的数量
 learning_rate = 0.001  # 学习率
